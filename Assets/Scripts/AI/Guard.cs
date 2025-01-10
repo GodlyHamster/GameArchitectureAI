@@ -1,9 +1,14 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class Guard : MonoBehaviour
 {
+    [SerializeField]
+    private List<Vector3> patrolPoints = new List<Vector3>();
+    private LinkedList<Vector3> linkedPatrolPoints = new LinkedList<Vector3>();
+
     [SerializeField]
     private TextMeshProUGUI stateText;
 
@@ -17,14 +22,17 @@ public class Guard : MonoBehaviour
 
     private void Start()
     {
+        foreach (Vector3 point in patrolPoints)
+        {
+            linkedPatrolPoints.AddLast(point);
+        }
+
         Blackboard blackboard = new Blackboard();
-        blackboard.SetVariable("patrolPos1", new Vector3(-14, 0, 0));
-        blackboard.SetVariable("patrolPos2", new Vector3(-14, 0, 9));
+        blackboard.SetVariable("patrolPoints", linkedPatrolPoints);
+        blackboard.SetVariable("currentPatrolPoint", linkedPatrolPoints.First);
 
         behaviorTree = new BTSequence(
-            new BTMoveToPosition(agent, "patrolPos1"),
-            new BTWait(2f),
-            new BTMoveToPosition(agent, "patrolPos2"),
+            new BTPatrol(agent, "currentPatrolPoint"),
             new BTWait(2f)
             );
         behaviorTree.SetupBlackboard( blackboard );

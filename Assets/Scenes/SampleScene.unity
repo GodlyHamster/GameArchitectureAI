@@ -927,6 +927,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e9915ccf1542d44ebd3b9817574a048, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  patrolPoints:
+  - {x: -14, y: 0, z: 0}
+  - {x: -14, y: 0, z: 9}
+  - {x: -12, y: 0, z: 5}
   stateText: {fileID: 1138108879}
 --- !u!114 &268035722
 MonoBehaviour:
