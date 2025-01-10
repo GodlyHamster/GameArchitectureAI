@@ -28,11 +28,10 @@ public class Guard : MonoBehaviour
         }
 
         Blackboard blackboard = new Blackboard();
-        blackboard.SetVariable("patrolPoints", linkedPatrolPoints);
         blackboard.SetVariable("currentPatrolPoint", linkedPatrolPoints.First);
 
         behaviorTree = new BTSequence(
-            new BTPatrol(agent, "currentPatrolPoint"),
+            new BTPatrol(agent, linkedPatrolPoints, "currentPatrolPoint"),
             new BTWait(2f)
             );
         behaviorTree.SetupBlackboard( blackboard );

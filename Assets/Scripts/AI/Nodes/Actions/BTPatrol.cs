@@ -6,14 +6,16 @@ public class BTPatrol : BTBaseNode
 {
     private NavMeshAgent _agent;
     private string _BBcurrentPoint;
+    private LinkedList<Vector3> _points;
     private LinkedListNode<Vector3> _targetPosition;
 
     private float maxStuckTimer = 3f;
     private float stuckTimer = 3f;
 
-    public BTPatrol(NavMeshAgent agent, string currentPoint)
+    public BTPatrol(NavMeshAgent agent, LinkedList<Vector3> points, string currentPoint)
     {
         _agent = agent;
+        _points = points;
         _BBcurrentPoint = currentPoint;
     }
 
@@ -28,7 +30,7 @@ public class BTPatrol : BTBaseNode
         if (_agent.pathPending) { return TaskStatus.Running; }
         if (_agent.hasPath && _agent.path.status == NavMeshPathStatus.PathPartial)
         {
-            blackboard.SetVariable(_BBcurrentPoint, _targetPosition.Next);
+            blackboard.SetVariable(_BBcurrentPoint, _targetPosition.NextOrFirst(_points));
             return TaskStatus.Failed; 
         }
         if (_agent.pathEndPosition != _targetPosition.Value)
@@ -38,7 +40,7 @@ public class BTPatrol : BTBaseNode
 
         if (Vector3.Distance(_agent.transform.position, _targetPosition.Value) <= 0.3f)
         {
-            blackboard.SetVariable(_BBcurrentPoint, _targetPosition.Next);
+            blackboard.SetVariable(_BBcurrentPoint, _targetPosition.NextOrFirst(_points));
             return TaskStatus.Success;
         }
 
@@ -51,7 +53,7 @@ public class BTPatrol : BTBaseNode
             }
             if (stuckTimer <= 0f)
             {
-                blackboard.SetVariable(_BBcurrentPoint, _targetPosition.Next);
+                blackboard.SetVariable(_BBcurrentPoint, _targetPosition.NextOrFirst(_points));
                 return TaskStatus.Failed;
             }
         }
