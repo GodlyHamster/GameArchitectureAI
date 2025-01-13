@@ -34,4 +34,9 @@ public class Player : MonoBehaviour
         rb.AddForce(movementValue * speed * Time.deltaTime, ForceMode.Impulse);
         rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxSpeed);
     }
+
+    public Vector3 GetPosition()
+    {
+        return transform.position;
+    }
 }

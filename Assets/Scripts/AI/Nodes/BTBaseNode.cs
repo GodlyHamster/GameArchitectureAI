@@ -55,3 +55,8 @@ public abstract class BTCompositeNode : BTBaseNode
         }
     }
 }
+
+public abstract class BTReturnNode<T> : BTBaseNode
+{
+    public abstract T ReturnValue();
+}

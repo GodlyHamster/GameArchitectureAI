@@ -1070,6 +1070,7 @@ GameObject:
   - component: {fileID: 275271182}
   - component: {fileID: 275271183}
   - component: {fileID: 275271184}
+  - component: {fileID: 275271185}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1159,6 +1160,25 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!114 &275271185
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 275271180}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_OverrideArea: 0
+  m_Area: 0
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 1
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff
 --- !u!1 &280088970
 GameObject:
   m_ObjectHideFlags: 0
@@ -3048,6 +3068,7 @@ GameObject:
   - component: {fileID: 995643877}
   - component: {fileID: 995643876}
   - component: {fileID: 995643878}
+  - component: {fileID: 995643879}
   m_Layer: 0
   m_Name: Ninja
   m_TagString: Untagged
@@ -3065,7 +3086,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3.5
+  m_Speed: 5
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -3105,6 +3126,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd7af96973edc754981e378f413c6b53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 275271180}
+--- !u!114 &995643879
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 995643874}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_OverrideArea: 0
+  m_Area: 0
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 1
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff
 --- !u!1 &1003080350
 GameObject:
   m_ObjectHideFlags: 0
@@ -5823,7 +5864,7 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.1
+  m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: 518e625460115334e8121ef4a7e3c984, type: 2}
   m_BuildHeightMesh: 0
