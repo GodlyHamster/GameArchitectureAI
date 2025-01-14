@@ -45,4 +45,9 @@ public class BTSequence : BTCompositeNode
             node.OnReset();
         }
     }
+
+    public override BTBaseNode GetState()
+    {
+        return children[_currentIndex].GetState();
+    }
 }

@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum TaskStatus { Success, Running, Failed }
-public abstract class BTBaseNode
+public interface NodeInterface
+{
+    BTBaseNode GetState();
+}
+public abstract class BTBaseNode : NodeInterface
 {
     protected Blackboard blackboard;
     private bool wasEntered = false;
@@ -36,6 +40,11 @@ public abstract class BTBaseNode
     protected abstract TaskStatus OnUpdate();
     protected virtual void OnEnter() { }
     protected virtual void OnExit() { }
+
+    public virtual BTBaseNode GetState()
+    {
+        return this;
+    }
 }
 
 public abstract class BTCompositeNode : BTBaseNode

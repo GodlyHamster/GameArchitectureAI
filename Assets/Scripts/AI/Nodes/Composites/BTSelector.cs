@@ -26,11 +26,6 @@ public class BTSelector : BTCompositeNode
         return TaskStatus.Failed;
     }
 
-    public BTBaseNode GetCurrentState()
-    {
-        return children[_currentIndex];
-    }
-
     protected override void OnEnter()
     {
         _currentIndex = 0;
@@ -48,5 +43,10 @@ public class BTSelector : BTCompositeNode
         {
             node.OnReset();
         }
+    }
+
+    public override BTBaseNode GetState()
+    {
+        return children[_currentIndex].GetState();
     }
 }

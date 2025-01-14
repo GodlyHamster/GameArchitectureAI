@@ -24,19 +24,19 @@ public class BTMoveToPosition : BTBaseNode
     protected override TaskStatus OnUpdate()
     {
         if (_agent == null) { return TaskStatus.Failed; }
-        if (_agent.pathPending) { return TaskStatus.Running; }
-        if (_agent.hasPath && _agent.path.status == NavMeshPathStatus.PathPartial) { return TaskStatus.Failed; }
         if (_agent.pathEndPosition != _targetPosition)
         {
             _agent.SetDestination(_targetPosition);
         }
+        if (_agent.pathPending) { return TaskStatus.Running; }
+        if (_agent.hasPath && _agent.path.status == NavMeshPathStatus.PathPartial) { return TaskStatus.Failed; }
 
-        //checks if agent is stuck for too long and returns fail if true
         if (Vector3.Distance(_agent.transform.position, _targetPosition) <= 0.3f)
         {
             return TaskStatus.Success;
         }
 
+        //checks if agent is stuck for too long and returns fail if true
         if (_agent.velocity.magnitude < 0.05f)
         {
             if (stuckTimer > 0f)

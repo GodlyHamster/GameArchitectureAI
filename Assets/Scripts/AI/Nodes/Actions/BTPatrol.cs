@@ -27,15 +27,16 @@ public class BTPatrol : BTBaseNode
     protected override TaskStatus OnUpdate()
     {
         if (_agent == null) { return TaskStatus.Failed; }
+        if (_agent.pathEndPosition != _targetPosition.Value)
+        {
+            _agent.SetDestination(_targetPosition.Value);
+        }
         if (_agent.pathPending) { return TaskStatus.Running; }
+
         if (_agent.hasPath && _agent.path.status == NavMeshPathStatus.PathPartial)
         {
             blackboard.SetVariable(_BBcurrentPoint, _targetPosition.NextOrFirst(_points));
             return TaskStatus.Failed; 
-        }
-        if (_agent.pathEndPosition != _targetPosition.Value)
-        {
-            _agent.SetDestination(_targetPosition.Value);
         }
 
         if (Vector3.Distance(_agent.transform.position, _targetPosition.Value) <= 0.3f)

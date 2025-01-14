@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -7,6 +8,11 @@ public class Ninja : MonoBehaviour
 {
     [SerializeField]
     private GameObject player;
+
+    [SerializeField]
+    private TextMeshProUGUI stateText;
+    [SerializeField]
+    private RectTransform canvas;
 
     private BTBaseNode behaviorTree;
     private NavMeshAgent agent;
@@ -23,7 +29,7 @@ public class Ninja : MonoBehaviour
         _blackboard.SetVariable("playerPosition", player.transform.position);
         _blackboard.SetVariable("randomvar", new Vector3(0, 0, 0));
 
-        behaviorTree = new BTSequence(
+        behaviorTree = new BTSelector(
             new BTMoveToPosition(agent, "playerPosition")
             );
         behaviorTree.SetupBlackboard(_blackboard);
@@ -31,7 +37,12 @@ public class Ninja : MonoBehaviour
 
     private void FixedUpdate()
     {
-        TaskStatus result = behaviorTree.Tick();
         _blackboard.SetVariable("playerPosition", player.transform.position);
+
+        TaskStatus result = behaviorTree.Tick();
+
+        BTBaseNode currentState = behaviorTree.GetState();
+        stateText.text = currentState.ToString();
+        canvas.rotation = Camera.main.transform.rotation;
     }
 }
