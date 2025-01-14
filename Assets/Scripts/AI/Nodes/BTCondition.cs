@@ -18,7 +18,7 @@ public class BTCondition : BTBaseNode
 
     protected override void OnEnter()
     {
-        if (_BBCondition == null) return;
+        if (_BBCondition == null || _BBCondition == "") return;
         _condition = blackboard.GetVariable<bool>(_BBCondition);
     }
 

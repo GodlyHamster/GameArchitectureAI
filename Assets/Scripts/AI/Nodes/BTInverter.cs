@@ -9,7 +9,8 @@
 
     protected override TaskStatus OnUpdate()
     {
-        switch (_node.Tick())
+        TaskStatus status = _node.Tick();
+        switch (status)
         {
             case TaskStatus.Success:
                 return TaskStatus.Failed;
@@ -18,6 +19,11 @@
             default:
                 return TaskStatus.Running;
         }
+    }
+
+    public override void SetupBlackboard(Blackboard blackboard)
+    {
+        _node.SetupBlackboard(blackboard);
     }
 }
 
