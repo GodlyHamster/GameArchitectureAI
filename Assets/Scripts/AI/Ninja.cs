@@ -9,6 +9,7 @@ public class Ninja : MonoBehaviour
     [SerializeField]
     private GameObject player;
 
+    [Header("Debugging")]
     [SerializeField]
     private TextMeshProUGUI stateText;
     [SerializeField]
