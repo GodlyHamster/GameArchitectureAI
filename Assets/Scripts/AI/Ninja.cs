@@ -15,34 +15,38 @@ public class Ninja : MonoBehaviour
     [SerializeField]
     private RectTransform canvas;
 
-    private BTBaseNode behaviorTree;
-    private NavMeshAgent agent;
+    private BTBaseNode _behaviorTree;
+    private NavMeshAgent _agent;
 
     private Blackboard _blackboard = new Blackboard();
 
     private void Awake()
     {
-        agent = GetComponent<NavMeshAgent>();
+        _agent = GetComponent<NavMeshAgent>();
     }
 
     private void Start()
     {
         _blackboard.SetVariable("playerPosition", player.transform.position);
-        _blackboard.SetVariable("randomvar", new Vector3(0, 0, 0));
+        _blackboard.SetVariable("playerOutRange", false);
 
-        behaviorTree = new BTSelector(
-            new BTMoveToPosition(agent, "playerPosition")
+        _behaviorTree = new BTSelector(
+            new BTSequence(
+                new BTCondition("playerOutRange"),
+                new BTMoveToPosition(_agent, "playerPosition")
+                )
             );
-        behaviorTree.SetupBlackboard(_blackboard);
+        _behaviorTree.SetupBlackboard(_blackboard);
     }
 
     private void FixedUpdate()
     {
         _blackboard.SetVariable("playerPosition", player.transform.position);
+        _blackboard.SetVariable("playerOutRange", Vector3.Distance(transform.position, player.transform.position) >= 3f);
 
-        TaskStatus result = behaviorTree.Tick();
+        TaskStatus result = _behaviorTree.Tick();
 
-        BTBaseNode currentState = behaviorTree.GetState();
+        BTBaseNode currentState = _behaviorTree.GetState();
         stateText.text = currentState.ToString();
         canvas.rotation = Camera.main.transform.rotation;
     }

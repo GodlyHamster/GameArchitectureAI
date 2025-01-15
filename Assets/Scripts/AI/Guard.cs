@@ -19,14 +19,14 @@ public class Guard : MonoBehaviour
     [SerializeField]
     private RectTransform canvas;
 
-    private BTBaseNode behaviorTree;
-    private NavMeshAgent agent;
+    private BTBaseNode _behaviorTree;
+    private NavMeshAgent _agent;
 
-    Blackboard _blackboard = new Blackboard();
+    private Blackboard _blackboard = new Blackboard();
 
     private void Awake()
     {
-        agent = GetComponent<NavMeshAgent>();
+        _agent = GetComponent<NavMeshAgent>();
     }
 
     private void Start()
@@ -39,29 +39,31 @@ public class Guard : MonoBehaviour
         _blackboard.SetVariable("currentPatrolPoint", linkedPatrolPoints.First);
         _blackboard.SetVariable("playerLastSeenPos", player.transform.position);
         _blackboard.SetVariable("playerInRange", false);
-        _blackboard.SetVariable("weaponLocation", Vector3.zero);
+        _blackboard.SetVariable("weaponLocation", GameObject.FindGameObjectWithTag("Weapon").transform.position);
         _blackboard.SetVariable("hasWeapon", false);
 
-        behaviorTree = new BTSelector(
+        _behaviorTree = new BTSelector(
             new BTSelector(
                 new BTSequence(
                     new BTCondition("playerInRange"),
                     new BTCondition("hasWeapon"),
-                    new BTMoveToPosition(agent, "playerLastSeenPos")
+                    new BTMoveToPosition(_agent, "playerLastSeenPos"),
+                    new BTDebug("pew pew")
                     ),
                 new BTSequence(
                     new BTCondition("playerInRange"),
                     new BTInverter(new BTCondition("hasWeapon")),
-                    new BTMoveToPosition(agent, "weaponLocation"),
-                    new BTMoveToPosition(agent, "playerLastSeenPos")
+                    new BTMoveToPosition(_agent, "weaponLocation"),
+                    new BTGrabWeapon(_agent, "hasWeapon"),
+                    new BTMoveToPosition(_agent, "playerLastSeenPos")
                     )
                 ),
             new BTSequence(
-                new BTPatrol(agent, linkedPatrolPoints, "currentPatrolPoint"),
+                new BTPatrol(_agent, linkedPatrolPoints, "currentPatrolPoint"),
                 new BTWait(2f)
                 )
             );
-        behaviorTree.SetupBlackboard(_blackboard);
+        _behaviorTree.SetupBlackboard(_blackboard);
     }
 
     private void FixedUpdate()
@@ -73,9 +75,9 @@ public class Guard : MonoBehaviour
             _blackboard.SetVariable("playerLastSeenPos", player.transform.position);
         }
 
-        TaskStatus result = behaviorTree.Tick();
+        TaskStatus result = _behaviorTree.Tick();
 
-        BTBaseNode currentState = behaviorTree.GetState();
+        BTBaseNode currentState = _behaviorTree.GetState();
         stateText.text = currentState.ToString();
         canvas.rotation = Camera.main.transform.rotation;
     }
