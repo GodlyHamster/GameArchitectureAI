@@ -37,20 +37,23 @@ public class Guard : MonoBehaviour
         }
 
         _blackboard.SetVariable("currentPatrolPoint", linkedPatrolPoints.First);
-        _blackboard.SetVariable("playerPosition", player.transform.position);
+        _blackboard.SetVariable("playerLastSeenPos", player.transform.position);
         _blackboard.SetVariable("playerInRange", false);
         _blackboard.SetVariable("weaponLocation", Vector3.zero);
         _blackboard.SetVariable("hasWeapon", false);
 
         behaviorTree = new BTSelector(
-            new BTSequence(
-                new BTCondition("playerInRange"),
+            new BTSelector(
                 new BTSequence(
-                    new BTInverter(new BTCondition("hasWeapon")),
-                    new BTMoveToPosition(agent, "playerPosition")
+                    new BTCondition("playerInRange"),
+                    new BTCondition("hasWeapon"),
+                    new BTMoveToPosition(agent, "playerLastSeenPos")
                     ),
                 new BTSequence(
-                    new BTMoveToPosition(agent, "weaponLocation")
+                    new BTCondition("playerInRange"),
+                    new BTInverter(new BTCondition("hasWeapon")),
+                    new BTMoveToPosition(agent, "weaponLocation"),
+                    new BTMoveToPosition(agent, "playerLastSeenPos")
                     )
                 ),
             new BTSequence(
@@ -63,8 +66,12 @@ public class Guard : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _blackboard.SetVariable("playerPosition", player.transform.position);
-        _blackboard.SetVariable("playerInRange", Vector3.Distance(transform.position, player.transform.position) <= 5f);
+        bool playerInRange = Vector3.Distance(transform.position, player.transform.position) <= 5f;
+        _blackboard.SetVariable("playerInRange", playerInRange);
+        if (playerInRange)
+        {
+            _blackboard.SetVariable("playerLastSeenPos", player.transform.position);
+        }
 
         TaskStatus result = behaviorTree.Tick();
 
