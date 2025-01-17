@@ -38,20 +38,20 @@ public class Guard : MonoBehaviour
 
         _blackboard.SetVariable("currentPatrolPoint", linkedPatrolPoints.First);
         _blackboard.SetVariable("playerLastSeenPos", player.transform.position);
-        _blackboard.SetVariable("playerInRange", false);
+        _blackboard.SetVariable("seesPlayer", false);
         _blackboard.SetVariable("weaponLocation", GameObject.FindGameObjectWithTag("Weapon").transform.position);
         _blackboard.SetVariable("hasWeapon", false);
 
         _behaviorTree = new BTSelector(
             new BTSelector(
                 new BTSequence(
-                    new BTCondition("playerInRange"),
+                    new BTCondition("seesPlayer"),
                     new BTCondition("hasWeapon"),
                     new BTMoveToPosition(_agent, "playerLastSeenPos"),
                     new BTDebug("pew pew")
                     ),
                 new BTSequence(
-                    new BTCondition("playerInRange"),
+                    new BTCondition("seesPlayer"),
                     new BTInverter(new BTCondition("hasWeapon")),
                     new BTMoveToPosition(_agent, "weaponLocation"),
                     new BTGrabWeapon(_agent, "hasWeapon"),
@@ -68,17 +68,21 @@ public class Guard : MonoBehaviour
 
     private void FixedUpdate()
     {
-        bool playerInRange = Vector3.Distance(transform.position, player.transform.position) <= 5f;
-        _blackboard.SetVariable("playerInRange", playerInRange);
-        if (playerInRange)
-        {
-            _blackboard.SetVariable("playerLastSeenPos", player.transform.position);
-        }
-
         TaskStatus result = _behaviorTree.Tick();
 
         BTBaseNode currentState = _behaviorTree.GetState();
         stateText.text = currentState.ToString();
         canvas.rotation = Camera.main.transform.rotation;
+    }
+
+    private void Update()
+    {
+        Vector3 rayOffset = new Vector3(0, 1, 0);
+        Vector3 rayDir = player.transform.position - transform.position;
+        if (Physics.Raycast(transform.position + rayOffset, rayDir, out RaycastHit hit, 5f))
+        {
+            _blackboard.SetVariable("seesPlayer", hit.transform.gameObject == player);
+            _blackboard.SetVariable("playerLastSeenPos", player.transform.position);
+        }
     }
 }
