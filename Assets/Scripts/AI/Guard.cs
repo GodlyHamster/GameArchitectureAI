@@ -24,6 +24,8 @@ public class Guard : MonoBehaviour
 
     private Blackboard _blackboard = new Blackboard();
 
+    private bool _isSmoked = false;
+
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
@@ -77,12 +79,26 @@ public class Guard : MonoBehaviour
 
     private void Update()
     {
-        Vector3 rayOffset = new Vector3(0, 1, 0);
-        Vector3 rayDir = player.transform.position - transform.position;
-        if (Physics.Raycast(transform.position + rayOffset, rayDir, out RaycastHit hit, 5f))
+        _blackboard.SetVariable("seesPlayer", _isSmoked);
+        if (!_isSmoked)
         {
-            _blackboard.SetVariable("seesPlayer", hit.transform.gameObject == player);
             _blackboard.SetVariable("playerLastSeenPos", player.transform.position);
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "smokeBomb")
+        {
+            _isSmoked = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.tag == "smokeBomb")
+        {
+            _isSmoked = false;
         }
     }
 }
