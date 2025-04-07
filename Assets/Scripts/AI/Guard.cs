@@ -79,7 +79,15 @@ public class Guard : MonoBehaviour
 
     private void Update()
     {
-        _blackboard.SetVariable("seesPlayer", _isSmoked);
+        Vector3 rayDir = player.transform.position - transform.position;
+        Physics.Raycast(transform.position, rayDir, out RaycastHit hit, 5f);
+
+        bool canSeePlayer = false;
+        if (hit.transform != null)
+        {
+            canSeePlayer = !hit.transform.gameObject.CompareTag("smokeBomb");
+        }
+        _blackboard.SetVariable("seesPlayer", (canSeePlayer && !_isSmoked));
         if (!_isSmoked)
         {
             _blackboard.SetVariable("playerLastSeenPos", player.transform.position);
