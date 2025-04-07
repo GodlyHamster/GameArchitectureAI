@@ -3,8 +3,9 @@ using UnityEngine;
 
 public class BTCondition : BTBaseNode
 {
-    private string _BBCondition;
     private bool _condition;
+    private string _BBCondition;
+    private Func<bool> _conditionPredicate;
 
     public BTCondition(bool condition)
     {
@@ -16,10 +17,23 @@ public class BTCondition : BTBaseNode
         _BBCondition = condition;
     }
 
+    public BTCondition(Func<bool> condition)
+    {
+        _conditionPredicate = condition;
+    }
+
     protected override void OnEnter()
     {
-        if (_BBCondition == null || _BBCondition == "") return;
-        _condition = blackboard.GetVariable<bool>(_BBCondition);
+        if (_conditionPredicate != null)
+        {
+            _condition = _conditionPredicate();
+            return;
+        }
+        if (_BBCondition != null && _BBCondition != "")
+        {
+            _condition = blackboard.GetVariable<bool>(_BBCondition);
+            return;
+        }
     }
 
     protected override TaskStatus OnUpdate()

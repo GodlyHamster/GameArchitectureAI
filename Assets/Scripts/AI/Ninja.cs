@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
@@ -30,7 +31,6 @@ public class Ninja : MonoBehaviour
     private void Start()
     {
         _blackboard.SetVariable("playerPosition", player.transform.position);
-        _blackboard.SetVariable("playerOutRange", false);
         _blackboard.SetVariable("seesGuard", false);
         _blackboard.SetVariable("guardLocation", Vector3.zero);
         _blackboard.SetVariable("smokeBombActive", false);
@@ -42,7 +42,7 @@ public class Ninja : MonoBehaviour
                 new BTThrowSmokeBomb("guardLocation", smokebomb)
                 ),
             new BTSequence(
-                new BTCondition("playerOutRange"),
+                new BTCondition(() => { return Vector3.Distance(transform.position, player.transform.position) >= 3f; }),
                 new BTMoveToPosition(_agent, "playerPosition")
                 )
             );
@@ -61,7 +61,6 @@ public class Ninja : MonoBehaviour
     private void Update()
     {
         _blackboard.SetVariable("playerPosition", player.transform.position);
-        _blackboard.SetVariable("playerOutRange", Vector3.Distance(transform.position, player.transform.position) >= 3f);
         _blackboard.SetVariable("seesGuard", Vector3.Distance(transform.position, guard.transform.position) <= 5f);
         _blackboard.SetVariable("guardLocation", guard.transform.position);
     }

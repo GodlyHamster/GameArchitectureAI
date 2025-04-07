@@ -93,20 +93,4 @@ public class Guard : MonoBehaviour
             _blackboard.SetVariable("playerLastSeenPos", player.transform.position);
         }
     }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.tag == "smokeBomb")
-        {
-            _isSmoked = true;
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.gameObject.tag == "smokeBomb")
-        {
-            _isSmoked = false;
-        }
-    }
 }
