@@ -38,10 +38,11 @@ public class Ninja : MonoBehaviour
         _behaviorTree = new BTSelector(
             new BTSequence(
                 new BTInverter(new BTCondition("smokeBombActive")),
-                new BTCondition("seesGuard"),
+                new BTCondition(() => { return Vector3.Distance(transform.position, guard.transform.position) <= 5f; }),
                 new BTThrowSmokeBomb("guardLocation", smokebomb)
                 ),
             new BTSequence(
+                new BTDebug(() => { return player.transform.position.ToString(); }),
                 new BTCondition(() => { return Vector3.Distance(transform.position, player.transform.position) >= 3f; }),
                 new BTMoveToPosition(_agent, "playerPosition")
                 )
@@ -61,7 +62,6 @@ public class Ninja : MonoBehaviour
     private void Update()
     {
         _blackboard.SetVariable("playerPosition", player.transform.position);
-        _blackboard.SetVariable("seesGuard", Vector3.Distance(transform.position, guard.transform.position) <= 5f);
         _blackboard.SetVariable("guardLocation", guard.transform.position);
     }
 }

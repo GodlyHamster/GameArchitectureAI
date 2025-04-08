@@ -16,8 +16,14 @@ public class BTMoveToPosition : BTBaseNode
         _BBTargetPosition = targetPosition;
     }
 
+    public BTMoveToPosition(NavMeshAgent agent, Vector3 targetPosition)
+    {
+        _targetPosition = targetPosition;
+    }
+
     protected override void OnEnter()
     {
+        if (_BBTargetPosition == null || _BBTargetPosition == "") return;
         _targetPosition = blackboard.GetVariable<Vector3>(_BBTargetPosition);
     }
 
