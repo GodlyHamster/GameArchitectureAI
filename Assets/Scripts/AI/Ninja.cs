@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using TMPro;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -10,7 +11,8 @@ public class Ninja : MonoBehaviour
     [SerializeField]
     private GameObject guard;
     [SerializeField]
-    private GameObject smokebomb;
+    private SmokeBomb smokebomb;
+    private float _smokeBombCooldown = 0f;
 
     [Header("Debugging")]
     [SerializeField]
@@ -33,16 +35,15 @@ public class Ninja : MonoBehaviour
         _blackboard.SetVariable("playerPosition", player.transform.position);
         _blackboard.SetVariable("seesGuard", false);
         _blackboard.SetVariable("guardLocation", Vector3.zero);
-        _blackboard.SetVariable("smokeBombActive", false);
+        _blackboard.SetVariable("smokeBombCooldown", 0f);
 
         _behaviorTree = new BTSelector(
             new BTSequence(
-                new BTInverter(new BTCondition("smokeBombActive")),
+                new BTCondition(() => { return _smokeBombCooldown <= 0f; }),
                 new BTCondition(() => { return Vector3.Distance(transform.position, guard.transform.position) <= 5f; }),
                 new BTThrowSmokeBomb("guardLocation", smokebomb)
                 ),
             new BTSequence(
-                new BTDebug(() => { return player.transform.position.ToString(); }),
                 new BTCondition(() => { return Vector3.Distance(transform.position, player.transform.position) >= 3f; }),
                 new BTMoveToPosition(_agent, "playerPosition")
                 )
@@ -63,5 +64,10 @@ public class Ninja : MonoBehaviour
     {
         _blackboard.SetVariable("playerPosition", player.transform.position);
         _blackboard.SetVariable("guardLocation", guard.transform.position);
+        _smokeBombCooldown = _blackboard.GetVariable<float>("smokeBombCooldown");
+        if (_smokeBombCooldown > 0)
+        {
+            _blackboard.SetVariable("smokeBombCooldown", _smokeBombCooldown - Time.deltaTime);
+        }
     }
 }

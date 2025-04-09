@@ -34,13 +34,8 @@ public class BTMoveToPosition : BTBaseNode
         {
             _agent.SetDestination(_targetPosition);
         }
-        if (_agent.pathPending) { return TaskStatus.Running; }
+        if (_agent.pathPending) { return TaskStatus.Success; }
         if (_agent.hasPath && _agent.path.status == NavMeshPathStatus.PathPartial) { return TaskStatus.Failed; }
-
-        if (Vector3.Distance(_agent.transform.position, _targetPosition) <= 0.5f)
-        {
-            return TaskStatus.Success;
-        }
 
         //checks if agent is stuck for too long and returns fail if true
         if (_agent.velocity.magnitude < 0.05f)
@@ -58,6 +53,6 @@ public class BTMoveToPosition : BTBaseNode
         {
             stuckTimer = maxStuckTimer;
         }
-        return TaskStatus.Running;
+        return TaskStatus.Success;
     }
 }
