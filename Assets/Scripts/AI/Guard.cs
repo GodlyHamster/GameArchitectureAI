@@ -12,6 +12,7 @@ public class Guard : MonoBehaviour
     [Header("Debugging")]
     [SerializeField]
     private List<Vector3> patrolPoints = new List<Vector3>();
+    private int currentPoint = 2;
     private LinkedList<Vector3> linkedPatrolPoints = new LinkedList<Vector3>();
 
     [SerializeField]
@@ -38,7 +39,7 @@ public class Guard : MonoBehaviour
             linkedPatrolPoints.AddLast(point);
         }
 
-        _blackboard.SetVariable("currentPatrolPoint", linkedPatrolPoints.First);
+        _blackboard.SetVariable("currentPatrolPoint", patrolPoints[currentPoint]);
         _blackboard.SetVariable("playerLastSeenPos", player.transform.position);
         _blackboard.SetVariable("seesPlayer", false);
         _blackboard.SetVariable("weaponLocation", GameObject.FindGameObjectWithTag("Weapon").transform.position);
@@ -61,7 +62,8 @@ public class Guard : MonoBehaviour
                     )
                 ),
             new BTSequence(
-                new BTPatrol(_agent, linkedPatrolPoints, "currentPatrolPoint"),
+                new BTMoveToPosition(_agent, "currentPatrolPoint", true),
+                new BTCondition(() => { return Vector3.Distance(_agent.transform.position, patrolPoints[currentPoint]) < 0.3f; }),
                 new BTWait(2f)
                 )
             );

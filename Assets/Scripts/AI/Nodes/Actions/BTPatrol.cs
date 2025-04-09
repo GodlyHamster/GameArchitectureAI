@@ -12,11 +12,14 @@ public class BTPatrol : BTBaseNode
     private float maxStuckTimer = 3f;
     private float stuckTimer = 3f;
 
-    public BTPatrol(NavMeshAgent agent, LinkedList<Vector3> points, string currentPoint)
+    private bool _interruptable = false;
+
+    public BTPatrol(NavMeshAgent agent, LinkedList<Vector3> points, string currentPoint, bool interruptable = false)
     {
         _agent = agent;
         _points = points;
         _BBcurrentPoint = currentPoint;
+        _interruptable = interruptable;
     }
 
     protected override void OnEnter()
@@ -62,6 +65,6 @@ public class BTPatrol : BTBaseNode
         {
             stuckTimer = maxStuckTimer;
         }
-        return TaskStatus.Running;
+        return _interruptable ? TaskStatus.Success : TaskStatus.Running;
     }
 }
