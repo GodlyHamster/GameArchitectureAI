@@ -12,8 +12,8 @@ public class Guard : MonoBehaviour
     [Header("Debugging")]
     [SerializeField]
     private List<Vector3> patrolPoints = new List<Vector3>();
-    private int currentPoint = 2;
     private LinkedList<Vector3> linkedPatrolPoints = new LinkedList<Vector3>();
+    private LinkedListNode<Vector3> currentNode;
 
     [SerializeField]
     private TextMeshProUGUI stateText;
@@ -38,8 +38,9 @@ public class Guard : MonoBehaviour
         {
             linkedPatrolPoints.AddLast(point);
         }
+        currentNode = linkedPatrolPoints.First;
 
-        _blackboard.SetVariable("currentPatrolPoint", patrolPoints[currentPoint]);
+        _blackboard.SetVariable("currentPatrolPoint", currentNode.Value);
         _blackboard.SetVariable("playerLastSeenPos", player.transform.position);
         _blackboard.SetVariable("seesPlayer", false);
         _blackboard.SetVariable("weaponLocation", GameObject.FindGameObjectWithTag("Weapon").transform.position);
@@ -63,8 +64,9 @@ public class Guard : MonoBehaviour
                 ),
             new BTSequence(
                 new BTMoveToPosition(_agent, "currentPatrolPoint", true),
-                new BTCondition(() => { return Vector3.Distance(_agent.transform.position, patrolPoints[currentPoint]) < 0.3f; }),
-                new BTWait(2f)
+                new BTCondition(() => { return Vector3.Distance(_agent.transform.position, currentNode.Value) <= 0.3f; }),
+                new BTWait(2f),
+                new BTUpdateVariable<Vector3>("currentPatrolPoint", () => { return currentNode.NextOrFirst(linkedPatrolPoints).Value; })
                 )
             );
         _behaviorTree.SetupBlackboard(_blackboard);
@@ -81,6 +83,7 @@ public class Guard : MonoBehaviour
 
     private void Update()
     {
+        //check if guard can see player
         Vector3 rayDir = player.transform.position - transform.position;
         Physics.Raycast(transform.position, rayDir, out RaycastHit hit, 5f);
 
