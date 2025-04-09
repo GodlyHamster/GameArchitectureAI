@@ -41,11 +41,12 @@ public class Ninja : MonoBehaviour
             new BTSequence(
                 new BTCondition(() => { return _smokeBombCooldown <= 0f; }),
                 new BTCondition(() => { return Vector3.Distance(transform.position, guard.transform.position) <= 5f; }),
+                new BTMoveToPosition(_agent, Vector3.zero),
                 new BTThrowSmokeBomb("guardLocation", smokebomb)
                 ),
             new BTSequence(
                 new BTCondition(() => { return Vector3.Distance(transform.position, player.transform.position) >= 3f; }),
-                new BTMoveToPosition(_agent, "playerPosition")
+                new BTMoveToPosition(_agent, "playerPosition", true)
                 )
             );
         _behaviorTree.SetupBlackboard(_blackboard);
