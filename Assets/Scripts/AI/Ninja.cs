@@ -1,4 +1,6 @@
 using JetBrains.Annotations;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -13,6 +15,8 @@ public class Ninja : MonoBehaviour
     [SerializeField]
     private SmokeBomb smokebomb;
     private float _smokeBombCooldown = 0f;
+
+    private List<Vector3> _hidingSpots = new List<Vector3>();
 
     [Header("Debugging")]
     [SerializeField]
@@ -32,16 +36,22 @@ public class Ninja : MonoBehaviour
 
     private void Start()
     {
+        foreach (var spot in GameObject.FindGameObjectsWithTag("HidingSpot"))
+        {
+            _hidingSpots.Add(spot.transform.position);
+        }
+
         _blackboard.SetVariable("playerPosition", player.transform.position);
         _blackboard.SetVariable("seesGuard", false);
         _blackboard.SetVariable("guardLocation", Vector3.zero);
         _blackboard.SetVariable("smokeBombCooldown", 0f);
+        _blackboard.SetVariable("closestHidingSpot", Vector3.zero);
 
         _behaviorTree = new BTSelector(
             new BTSequence(
                 new BTCondition(() => { return _smokeBombCooldown <= 0f; }),
                 new BTCondition(() => { return Vector3.Distance(transform.position, guard.transform.position) <= 5f; }),
-                new BTMoveToPosition(_agent, Vector3.zero),
+                new BTMoveToPosition(_agent, "closestHidingSpot"),
                 new BTThrowSmokeBomb("guardLocation", smokebomb)
                 ),
             new BTSequence(
@@ -59,6 +69,8 @@ public class Ninja : MonoBehaviour
         BTBaseNode currentState = _behaviorTree.GetState();
         stateText.text = currentState.ToString();
         canvas.rotation = Camera.main.transform.rotation;
+
+        _blackboard.SetVariable("closestHidingSpot", GetClosestHidingSpot());
     }
 
     private void Update()
@@ -70,5 +82,12 @@ public class Ninja : MonoBehaviour
         {
             _blackboard.SetVariable("smokeBombCooldown", _smokeBombCooldown - Time.deltaTime);
         }
+    }
+
+    private Vector3 GetClosestHidingSpot()
+    {
+        if (_hidingSpots == null || _hidingSpots.Count == 0) return Vector3.zero;
+        _hidingSpots = _hidingSpots.OrderBy((v) => (transform.position - v ).sqrMagnitude).ToList();
+        return _hidingSpots[0];
     }
 }

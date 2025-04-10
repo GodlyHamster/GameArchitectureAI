@@ -13,7 +13,6 @@ public class Guard : MonoBehaviour
     [SerializeField]
     private List<Vector3> patrolPoints = new List<Vector3>();
     private LinkedList<Vector3> linkedPatrolPoints = new LinkedList<Vector3>();
-    private LinkedListNode<Vector3> currentNode;
 
     [SerializeField]
     private TextMeshProUGUI stateText;
@@ -38,9 +37,8 @@ public class Guard : MonoBehaviour
         {
             linkedPatrolPoints.AddLast(point);
         }
-        currentNode = linkedPatrolPoints.First;
 
-        _blackboard.SetVariable("currentPatrolPoint", currentNode);
+        _blackboard.SetVariable("currentPatrolPoint", linkedPatrolPoints.First);
         _blackboard.SetVariable("playerLastSeenPos", player.transform.position);
         _blackboard.SetVariable("seesPlayer", false);
         _blackboard.SetVariable("weaponLocation", GameObject.FindGameObjectWithTag("Weapon").transform.position);
@@ -64,7 +62,6 @@ public class Guard : MonoBehaviour
                 ),
             new BTSequence(
                 new BTPatrol(_agent, linkedPatrolPoints, "currentPatrolPoint", true),
-                new BTDebug("Arrived at point because success"),
                 new BTWait(2f)
                 )
             );
