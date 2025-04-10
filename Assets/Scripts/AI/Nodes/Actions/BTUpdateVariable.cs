@@ -18,6 +18,7 @@ public class BTUpdateVariable<T> : BTBaseNode
     public BTUpdateVariable(string BBvariable, Func<T> newFuncValue)
     {
         this.BBvariable = BBvariable;
+        FuncValue = newFuncValue;
     }
 
     protected override void OnEnter()

@@ -65,6 +65,6 @@ public class BTPatrol : BTBaseNode
         {
             stuckTimer = maxStuckTimer;
         }
-        return _interruptable ? TaskStatus.Success : TaskStatus.Running;
+        return _interruptable ? TaskStatus.Failed : TaskStatus.Running;
     }
 }

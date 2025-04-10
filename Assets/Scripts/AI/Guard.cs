@@ -40,7 +40,7 @@ public class Guard : MonoBehaviour
         }
         currentNode = linkedPatrolPoints.First;
 
-        _blackboard.SetVariable("currentPatrolPoint", currentNode.Value);
+        _blackboard.SetVariable("currentPatrolPoint", currentNode);
         _blackboard.SetVariable("playerLastSeenPos", player.transform.position);
         _blackboard.SetVariable("seesPlayer", false);
         _blackboard.SetVariable("weaponLocation", GameObject.FindGameObjectWithTag("Weapon").transform.position);
@@ -63,10 +63,9 @@ public class Guard : MonoBehaviour
                     )
                 ),
             new BTSequence(
-                new BTMoveToPosition(_agent, "currentPatrolPoint", true),
-                new BTCondition(() => { return Vector3.Distance(_agent.transform.position, currentNode.Value) <= 0.3f; }),
-                new BTWait(2f),
-                new BTUpdateVariable<Vector3>("currentPatrolPoint", () => { return currentNode.NextOrFirst(linkedPatrolPoints).Value; })
+                new BTPatrol(_agent, linkedPatrolPoints, "currentPatrolPoint", true),
+                new BTDebug("Arrived at point because success"),
+                new BTWait(2f)
                 )
             );
         _behaviorTree.SetupBlackboard(_blackboard);
