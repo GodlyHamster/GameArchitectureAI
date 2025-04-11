@@ -26,6 +26,10 @@ public class Guard : MonoBehaviour
 
     private bool _isSmoked = false;
 
+    [SerializeField]
+    private GameObject _weaponObject;
+    private bool _hasWeapon = false;
+
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
@@ -49,17 +53,17 @@ public class Guard : MonoBehaviour
                 new BTSequence(
                     new BTCondition("seesPlayer"),
                     new BTCondition("hasWeapon"),
-                    new BTMoveToPosition(_agent, "playerLastSeenPos"),
+                    new BTMoveToPosition(_agent, "playerLastSeenPos", true),
                     new BTDebug("pew pew")
-                    ),
+                ),
                 new BTSequence(
                     new BTCondition("seesPlayer"),
                     new BTInverter(new BTCondition("hasWeapon")),
                     new BTMoveToPosition(_agent, "weaponLocation"),
                     new BTGrabWeapon(_agent, "hasWeapon"),
-                    new BTMoveToPosition(_agent, "playerLastSeenPos")
-                    )
-                ),
+                    new BTMoveToPosition(_agent, "playerLastSeenPos", true)
+                )
+            ),
             new BTSequence(
                 new BTPatrol(_agent, linkedPatrolPoints, "currentPatrolPoint", true),
                 new BTWait(2f)
@@ -79,6 +83,7 @@ public class Guard : MonoBehaviour
 
     private void Update()
     {
+
         //check if guard can see player
         Vector3 rayDir = player.transform.position - transform.position;
         Physics.Raycast(transform.position, rayDir, out RaycastHit hit, 5f);
@@ -86,12 +91,34 @@ public class Guard : MonoBehaviour
         bool canSeePlayer = false;
         if (hit.transform != null)
         {
-            canSeePlayer = !hit.transform.gameObject.CompareTag("smokeBomb");
+            canSeePlayer = hit.transform.CompareTag("Player");
         }
         _blackboard.SetVariable("seesPlayer", (canSeePlayer && !_isSmoked));
-        if (!_isSmoked)
+        if (canSeePlayer && !_isSmoked)
         {
             _blackboard.SetVariable("playerLastSeenPos", player.transform.position);
+        }
+
+        _hasWeapon = _blackboard.GetVariable<bool>("hasWeapon");
+        if (_hasWeapon && !_weaponObject.activeSelf)
+        {
+            _weaponObject.SetActive(true);
+        }
+    }
+
+    private void OnTriggerEnter(Collider collider)
+    {
+        if (collider.gameObject.CompareTag("smokeBomb"))
+        {
+            _isSmoked = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider collider)
+    {
+        if (collider.gameObject.CompareTag("smokeBomb"))
+        {
+            _isSmoked = false;
         }
     }
 }
